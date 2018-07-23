@@ -1,49 +1,23 @@
+#include <memory>	// shared_ptr
 #include <iostream>
-#include <memory>	// shared_ptr所在路径
-#include <thread>
-#include <chrono>
-#include <mutex>
+#include <cassert>
 
-struct Base {
-	Base () { std::cout << " 调用Base的构造函数\n"; }
-	// 注意：非虚构造函数在这里是没问题的。
-	~Base() {std::cout << " 调用Base的析构函数\n";}
-};
+int main () {
+	std::shared_ptr<int> sp (new int (10));		// 一个指向整数的shared_ptr
+	assert (sp.unique());						// sp是这个内存空间的唯一持有者
+	std::cout << "sp的值是：" << *sp << std::endl;	// 输出
 
-struct Derived : public Base {
-	Derived () { std::cout << "调用Derived的构造函数\n"; }
-	~Derived () { std::cout << "调用Derived的析构函数\n"; }
-};
+	std::shared_ptr<int> sp2 = sp;					// 现在又多出来一个持有者
+	assert (sp == sp2 && sp.use_count() == 2);	// 现在是两个持有者，指针值是一样的。
+	std::cout << "sp的值是：" << *sp << "，引用计数是：" << sp.use_count() << std::endl;
 
-void thr (std::shared_ptr<Base> p) {
-	std::this_thread::sleep_for (std::chrono::seconds(1));
-	std::shared_ptr <Base> lp = p;
-	
-	{
-		static std::mutex io_mutex;
-		std::lock_guard<std::mutex> lk(io_mutex);
-		std::cout << "local pointer in a thread:" << std::endl
-				  << "   lp.get() = " << lp.get()
-				  << ", lp.use_count() = " << lp.use_count () << "\n";
-	}
-}
+	*sp2 = 100;									// 将数值该成100
+	assert (*sp == 100);						// 这是成立的
+	std::cout << "sp的值是：" << *sp << "，引用计数是：" << sp.use_count() << std::endl;
 
-int main() {
-	std::shared_ptr <Base> p = std::make_shared<Derived> ();
-	
-	std::cout << "创建一个共享的Derived（作为一个到Base的指针）" << std::endl
-			  << "   p.get() = " << p.get()
-			  << ", p.use_count() = " << p.use_count () << std::endl;
-			  
-	std::thread t1 (thr, p), t2 (thr, p), t3 (thr, p);
-	p.reset();	// 释放主函数中的引用
-	std::cout << "共享的拥有关系在三个线程之间并且释放" << std::endl;
-	std::cout << "main函数中的拥有权：" << std::endl
-			  << "  p.get() = " << p.get()
-			  << ", p.use_count() = " << p.use_count() << std::endl;
-			  
-	t1.join(); t2.join(); t3.join();
-	std::cout << "所有的线程都完成，最后一个删除掉Derived的指针\n";
-	
-	std::getchar();
+	sp.reset ();								// sp不指向100了
+	assert (sp == nullptr);						// 这是成立的
+	std::cout << "sp的地址是：" << sp << "，sp1的值是：" << *sp2 << "，引用计数是" << sp2.use_count() << std::endl;
+
+	return 0;
 }
