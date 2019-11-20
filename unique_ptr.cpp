@@ -19,7 +19,8 @@ std::unique_ptr<int> Function1(std::unique_ptr<int>&& ptr)
 	return std::move(temp);
 }
 
-int main()
+/// 测试引用和右值引用
+void TestRefAndRRef()
 {
 	std::unique_ptr<int>	pInt(new int);
 	*pInt = 10;
@@ -30,6 +31,40 @@ int main()
 	
 	std::unique_ptr<int> pInt2 = Function1(std::move(pInt));
 	std::cout << "After *pInt2 = " << *pInt2 << std::endl;
+}
+////////////////////////////////////////////////////////////////
+
+int32_t countNum = 0;
+struct D
+{
+	int32_t n;
+    D() { n = countNum; std::cout << "D::D " << ", n = " << n << "\n";  ++countNum;}
+    ~D() { std::cout << "D::~D " << ", n = " << n << "\n";  }
+    void bar() { std::cout << "D::bar\n";  }
+};
+
+void TestUniqueArray()
+{
+	std::unique_ptr<int[]> intArray(new int[10]);
+	for (int32_t i = 0; i < 10; ++i)
+		intArray[i] = i;
+	std::cout << "The unique array is: " << std::endl;
+	for (int32_t i = 0; i < 10; ++i)
+		std::cout << intArray[i] << " ";
+	std::cout << std::endl << std::endl << std::endl;
+	
+	{
+		std::unique_ptr<D[]> DArray(new D[4]);
+	}
+	std::cout << std::endl << std::endl << std::endl;
+}
+// 智能指针。作为一种对普通指针的扩展，拥有直接调用以及作为数组使用两种使用方式。
+//////////////////////////////////////////////////////////////
+
+int main()
+{
+	//TestRefAndRRef();
+	TestUniqueArray();
 	
 	return 0;
 }
