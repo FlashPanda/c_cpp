@@ -6,7 +6,7 @@ using namespace std;
 class ScopedThread
 {
 public:
-	explicit ScopedThread(thread&& t) : t(t) {
+	explicit ScopedThread(thread t) : t(std::move(t)) {
 		if (!t.joinable())
 			throw logic_error("No thread");
 	}
