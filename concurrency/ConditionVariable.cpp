@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <chrono>
 #include <mutex>
 #include <condition_variable>
 
@@ -17,7 +18,7 @@ void worker_thread()
 {
     // Wait until main() sends data
     std::unique_lock<std::mutex> lk(m);
-    cv.wait(lk, []{return ready;});
+    cv.wait(lk, []{return ready;});     // If the condition is not satified, the mutex will be unlocked.
 
     // after the wait, we own the lock.
     std::cout << "Worker thread is processing data\n";
@@ -35,10 +36,12 @@ void worker_thread()
 
 int main()
 {
+    using namespace std::chrono_literals;
     std::thread worker (worker_thread);
 
     data = "Example data";
     // send data to the worker thread
+    std::this_thread::sleep_for(1s);
     {
         std::lock_guard<std::mutex> lk(m);
         ready = true;
