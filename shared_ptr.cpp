@@ -27,13 +27,39 @@ void Test1()
 void Test2()
 {
 	std::shared_ptr<int32_t> p(new int32_t(32));
-	cout << "size of shared_ptr is " << sizeof(p) << endl;
+	cout << "size of shared_ptr<int32_t> is " << sizeof(p) << endl;
 	
 }
+
+void Test3()
+{
+	class X
+	{
+	public:
+		X() : m_x(0), m_y(0) {}
+		virtual ~X() {}
+		
+		virtual void Output()
+		{
+			for (int32_t i = 0; i < 10; ++i)
+				;
+		}
+		
+	private:
+		int32_t m_x;
+		int32_t m_y;
+	};
+	
+	std::shared_ptr<X> p(new X);
+	cout << "size of shared_ptr<X> is " << sizeof (p) << endl;
+}
+
 
 int main () {
 
 	Test2();
+	cout << endl;
+	Test3();
 
 	return 0;
 }
