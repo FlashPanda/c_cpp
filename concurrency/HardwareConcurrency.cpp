@@ -7,4 +7,5 @@ int main()
 
     // Output 8 on my i7-9700K based computer.
     std::cout << n << " concurrent threads are supported.\n";
+
 }
