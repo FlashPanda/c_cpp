@@ -31,8 +31,8 @@ int main()
 	int32_t m = kMesh;
 	int32_t ma = kMaterial;
 	
-	std::cout << " m = " << m << std::endl;
-	std::cout << " ma = " << ma << std::endl;
+	std::cout << " m = " << m << std::endl;	// 1296388936
+	std::cout << " ma = " << ma << std::endl;	// 1296127052
 	std::cout << " 12_w = " << 12_w << std::endl; // 会输出12，如果没有那个unsigned long long的函数，会输出16
 	
 	return 0;
